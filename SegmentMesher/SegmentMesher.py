@@ -342,7 +342,8 @@ class SegmentMesherWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
       segmentIDs = vtk.vtkStringArray()
       inputSeg.GetSegmentation().GetSegmentIDs(segmentIDs) 
       for index in range(0, segmentIDs.GetNumberOfValues()):
-        self.ui.segmentSelectorCombBox.addItem(segmentIDs.GetValue(index))
+        segment = inputSeg.GetSegmentation().GetSegment(segmentIDs.GetValue(index))
+        self.ui.segmentSelectorCombBox.addItem(segment.GetName())
 
     #Restore index - often we will be reloading the data from the same segmentation, so re-select items number of items is the same
     if oldCount == self.ui.segmentSelectorCombBox.count:
@@ -436,8 +437,10 @@ class SegmentMesherWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
       segmentIndexes = self.ui.segmentSelectorCombBox.checkedIndexes()
       segments = []
 
+      inputSeg = self.ui.inputModelSelector.currentNode()
+
       for index in segmentIndexes:
-        segments.append(self.ui.segmentSelectorCombBox.itemText(index.row()))
+        segments.append(inputSeg.GetSegmentation().GetSegmentIdBySegmentName(self.ui.segmentSelectorCombBox.itemText(index.row())))
 
       print(method)
       if method == METHOD_CLEAVER:
